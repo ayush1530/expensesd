@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #0a0528;
+            padding: 15px;
+            text-align: center;
+        }
+        .navbar h1 {
+            color: white;
+            margin: 0;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        form input, form select, form button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        form input {
+            flex: 1;
+        }
+        form button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background: #0056b3;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Filter Styles */
+        .filter-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .filter-container select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Total Amount */
+        .total {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    padding: 15px 20px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar .logo h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.navbar .nav-links a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.navbar .nav-links a:hover {
+    text-decoration: underline;
+}
+
+.search-bar input {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.dark-mode-toggle {
+    cursor: pointer;
+    padding: 8px 12px;
+    background: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.dark-mode .navbar {
+    background: linear-gradient(to right, #222, #111);
+}
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #121212;
+    color: white;
+}
+
+.dark-mode .container {
+    background: #1e1e1e;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .navbar {
+    background: linear-gradient(to right, #222, #111);
+}
+
+.dark-mode .navbar h1 {
+    color: white;
+}
+
+.dark-mode table {
+    background: #1e1e1e;
+    color: white;
+}
+
+.dark-mode th {
+    background: #333;
+    color: white;
+}
+
+.dark-mode td {
+    border-color: #555;
+}
+
+.dark-mode .filter-container select,
+.dark-mode .search-bar input,
+.dark-mode form input,
+.dark-mode form select,
+.dark-mode form button {
+    background: #222;
+    color: white;
+    border: 1px solid #555;
+}
+
+.dark-mode .dark-mode-toggle {
+    background: #333;
+    color: white;
+    border: 1px solid white;
+}
+
+.dark-mode .delete-btn {
+    color: #ff5b5b;
+}
+
+    </style>
+    
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <h1>💰 Expense Tracker</h1>
+        </div>
+        <!-- <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/add">Add Expense</a>
+            <a href="/reports">View Reports</a>
+        </div> -->
+        <form method="GET" action="/" onsubmit="return validateSearch()">
+            <input type="text" name="search" id="searchInput" placeholder="Search expenses..." 
+                   value="{{ search_query }}" oninput="checkSearchInput()"
+                   style="padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px;">
+            <button type="submit" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 5px;">
+                Search
+            </button>
+        </form>
+        
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    </div>
+    
+
+    <div class="container">
+        <!-- Expense Form -->
+        <form action="/add" method="POST">
+            <input type="text" name="name" placeholder="Expense Name" required>
+            <input type="number" name="amount" placeholder="Amount" step="0.01" required>
+            <input type="text" name="category" placeholder="Category" required>
+            <input type="date" name="date" required>
+            <button type="submit">Add Expense</button>
+        </form>
+
+        <!-- Category Filter -->
+        <div class="filter-container">
+            <form method="GET" action="/">
+                <label for="category">Filter by Category:</label>
+                <select name="category" id="category" onchange="this.form.submit()">
+                    <option value="All" {% if selected_category == "All" or not selected_category %}selected{% endif %}>All</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Expenses Table -->
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+            {% for category, expenses in expenses_by_category.items() %}
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense[1] }}</td>
+                    <td>${{ expense[2] }}</td>
+                    <td>{{ expense[3] }}</td>
+                    <td>{{ expense[4] }}</td>
+                    <td><a href="/delete/{{ expense[0] }}" class="delete-btn">Delete</a></td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+
+        <!-- Total Amount -->
+        <div class="total">
+            Total Expenses: ${{ total_amount }}
+        </div>
+        <h3>Expenses by Category</h3>
+<img src="data:image/png;base64,{{ bar_chart }}" alt="Bar Chart" style="width:100%; max-width:600px; align-items: center; justify-content: center;">
+
+<h3>Expense Distribution</h3>
+<img src="data:image/png;base64,{{ pie_chart }}" alt="Pie Chart" style="width:100%; max-width:600px;">
+    </div>
+    <!-- <div class="container-ch">
+        <h2>Expense Analysis</h2>
+        
+        <div class="chart-container">
+            <h3>Bar Chart</h3>
+            <img src="/bar_chart" alt="Bar Chart" style="width:100%;">
+        </div>
+    
+        <div class="chart-container">
+            <h3>Pie Chart</h3>
+            <img src="/pie_chart" alt="Pie Chart" style="width:100%;">
+        </div>
+    </div> -->
+
+
+
+    
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Load dark mode preference from localStorage
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+        }
+
+        // Toggle dark mode on button click
+        document.querySelector(".dark-mode-toggle").addEventListener("click", function () {
+            document.body.classList.toggle("dark-mode");
+
+            // Store preference in localStorage
+            if (document.body.classList.contains("dark-mode")) {
+                localStorage.setItem("darkMode", "enabled");
+            } else {
+                localStorage.setItem("darkMode", "disabled");
+            }
+        });
+    });
+   
+    document.addEventListener("DOMContentLoaded", function() {
+        let searchInput = document.querySelector("input[name='search']");
+
+        searchInput.addEventListener("input", function() {
+            if (searchInput.value.trim() === "") {
+                window.location.href = "/";  // Reload the page to reset results
+            }
+        });
+    });
+
+
+</script>
+
+</html>
